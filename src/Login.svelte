@@ -2,13 +2,23 @@
     import Profile from './Profile.svelte';
     import Todos from './Todos.svelte';
 
-    import { auth, googleProvider } from './firebase';
+    import { auth, googleProvider , db } from './firebase';
     import { authState } from 'rxfire/auth';
-    import { map } from 'rxjs/operators';
+    import { collectionData, docData } from 'rxfire/firestore';
+    import { map, filter, switchMap, pluck, startWith } from 'rxjs/operators';
 
     let user;
 
-    authState(auth).subscribe(val => console.log('USSERRR : ', val));
+    let isAllowed;
+    
+    const query = (uid) => db.collection('allowed').doc(uid);
+
+    authState(auth).pipe(
+        filter(val => !!val),
+        switchMap(user => docData(query(user.uid))),
+        pluck('allowed'),
+        startWith(false),
+    ).subscribe(val => { console.log('HEY, ', val); isAllowed = val });
 
     const unsubscribe = authState(auth).pipe(map(user => (user ? { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL}: null))).subscribe(u => user = u);
 
@@ -27,10 +37,14 @@
 
 <section>
 {#if user}
-    <Profile {...user} />
-    <button on:click={ () => auth.signOut() } class="button">Logout</button>
-    <hr>
-    <Todos uid={user.uid} />
+    {#if isAllowed}
+        <Profile {...user} />
+        <button on:click={ () => auth.signOut() } class="button">Logout</button>
+        <hr>
+        <Todos uid={user.uid} />
+    {:else}
+        Loading...
+    {/if}
 {:else}
 	<button on:click={login} class="button">
 		Signin with Google
