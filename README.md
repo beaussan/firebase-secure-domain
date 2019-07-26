@@ -1,11 +1,6 @@
-## Svelte v3 - Firebase Demo
+## Svelte v3 - Firebase auth secure 
 
-More [Svelte](https://fireship.io/tags/svelte/) on Fireship.io
-
-Build a basic authenticated todo app with Svelte & Firebase (RxFire):
-
-* [x] login/logout with Google OAuth
-* [x] create, query, update, delete associated todo items.
+See the blog post here : 
 
 ```
 git clone
