@@ -8,7 +8,7 @@
 
     let text = 'some task';
 
-    const query = db.collection('todos').where('uid', '==', uid).orderBy('created');
+    const query = db.collection('todos').orderBy('created');
 
     const todos = collectionData(query, 'id').pipe(startWith([]));
 
