@@ -4,10 +4,13 @@
 
     import { auth, googleProvider } from './firebase';
     import { authState } from 'rxfire/auth';
+    import { map } from 'rxjs/operators';
 
     let user;
 
-    const unsubscribe = authState(auth).subscribe(u => user = u);
+    authState(auth).subscribe(val => console.log('USSERRR : ', val));
+
+    const unsubscribe = authState(auth).pipe(map(user => (user ? { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL}: null))).subscribe(u => user = u);
 
     function login() {
         auth.signInWithPopup(googleProvider);
